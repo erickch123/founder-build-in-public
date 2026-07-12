@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import 'dotenv/config';
+import {loadProjectEnvironment} from './config/environment.js';
 import {runEndDay} from './pipeline/end-day.js';
 import {extractLearningWithOpenAI} from './ai/openai-provider.js';
 import {authorizeGmail, fetchSelectedNewsletters, listNewsletterCandidates, type GmailCandidate} from './gmail/gmail-adapter.js';
@@ -7,6 +7,8 @@ import {exportLearningToNotion} from './notion/notion-export.js';
 import {readPrivateJson, singaporeDate, writePrivateJson} from './store/local-store.js';
 import type {LearningItem, SourceItem} from './domain/schemas.js';
 import {loadDemoFixture} from './fixtures/load-demo-fixture.js';
+
+loadProjectEnvironment();
 
 const args = process.argv.slice(2);
 const [userArg, workspaceArg, commandArg] = args;
@@ -56,11 +58,21 @@ try {
   }
   if (workspaceId === 'learning' && command === 'sync-notion') {
     let learnings: LearningItem[];
+    let sourceLabel: string;
     if (fixture) {
-      learnings = (await loadDemoFixture()).learnings;
+      const demoFixture = await loadDemoFixture();
+      if (ai) {
+        learnings = await extractLearningWithOpenAI(demoFixture.sources.filter((source) => source.selected));
+        await writePrivateJson(userId, 'learning-log.json', learnings);
+        sourceLabel = 'AI-generated fixture learnings';
+      } else {
+        learnings = demoFixture.learnings;
+        sourceLabel = 'prewritten fixture fallback';
+      }
     } else {
       try {
         learnings = await readPrivateJson<LearningItem[]>(userId, 'learning-log.json');
+        sourceLabel = 'local learning log';
       } catch (error) {
         if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
           throw new Error('No local learning log found. Run `digest --ai` first, or add --fixture to export the sanitized fixture learnings.');
@@ -69,7 +81,7 @@ try {
       }
     }
     const url = await exportLearningToNotion(singaporeDate(), learnings);
-    console.log(`✓ Exported ${learnings.length} learnings to Notion\nNotion  ${url}`);
+    console.log(`✓ Exported ${learnings.length} learnings to Notion (${sourceLabel})\nNotion  ${url}`);
     process.exit(0);
   }
   if (workspaceId === 'learning' && command === 'digest') {
