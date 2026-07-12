@@ -64,7 +64,7 @@ export const buildPublicManifest = (input: ManifestInput): PublicManifest => {
     disclosure: {
       fixtureSources: input.sources.filter((source) => source.sourceType === 'fixture-newsletter' && source.selected).length,
       manualCaptures: input.events.filter((event) => event.sourceIds.length === 0).length,
-      statement: 'Generated from synthetic newsletter fixtures and sanitized founder captures.',
+      statement: 'Generated from sanitized, user-curated newsletter metadata and founder captures in fixture mode.',
     },
   });
 };

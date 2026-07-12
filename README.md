@@ -64,7 +64,7 @@ outputs/<date>/
 
 ## Run the fixture golden path
 
-Requires Node.js 20 or newer. Fixture mode uses synthetic data and does not require provider credentials.
+Requires Node.js 20 or newer. Fixture mode uses sanitized, user-curated metadata and does not require provider credentials or Gmail access.
 
 ```bash
 npm install
@@ -80,7 +80,7 @@ The demo writes private-by-default, gitignored artifacts to `outputs/2026-07-12/
 Working now:
 
 - strict TypeScript domain schemas and CLI;
-- synthetic newsletter and founder-activity fixtures;
+- sanitized newsletter metadata and founder-activity fixtures;
 - workspace-aware privacy filtering and public-safe manifest compilation;
 - deterministic fixture story planning;
 - Markdown and HTML Founder Digest generation;

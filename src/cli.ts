@@ -20,11 +20,11 @@ if (command !== 'end-day') throw new Error(`Unsupported command: ${command}`);
 if (storage !== 'local') throw new Error('Only local storage is implemented in the golden path.');
 
 console.log('Founder Build in Public — fixture golden path\n');
-console.log('… Loading curated synthetic evidence');
+console.log('… Loading sanitized, user-curated fixture evidence');
 
 try {
   const result = await runEndDay({userId, workspaceId, fixture, storage: 'local'});
-  console.log('✓ Loaded curated fixture newsletters');
+  console.log('✓ Loaded 3 sanitized, user-curated newsletter fixtures');
   console.log(`✓ Excluded ${result.excludedConfidentialEvents} confidential workspace event`);
   console.log(`✓ Selected story: ${result.storyTitle}`);
   console.log('✓ Generated Founder Digest');
