@@ -1,0 +1,20 @@
+{
+  "project": "Founder Build in Public",
+  "repository": "founder-build-in-public",
+  "generated_files": [
+    "AGENTS.md",
+    "README.md",
+    "docs/ARCHITECTURE.md",
+    "docs/COMMANDS.md",
+    "docs/DATA_MODEL.md",
+    "docs/DECISIONS_AND_ROADMAP.md",
+    "docs/DEMO_PITCH.md",
+    "docs/HACKATHON_CHECKLIST.md",
+    "docs/IMPLEMENTATION_PLAN.md",
+    "docs/PRD.md",
+    "docs/SECURITY_PRIVACY.md",
+    "docs/SOURCES.md",
+    "hermes-skill/founder-build-in-public/SKILL.md"
+  ],
+  "purpose": "Pre-implementation product, architecture, agent, security, and demo planning pack."
+}
