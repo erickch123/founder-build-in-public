@@ -75,6 +75,41 @@ npm run demo
 
 The demo writes private-by-default, gitignored artifacts to `outputs/2026-07-12/` and renders a 1080×1920, 45-second Founder Reel.
 
+## Commands available now
+
+Run these commands from the repository root. Until the package is installed globally, use `npm run founder --` before the Founder CLI arguments.
+
+| What you want to test | Command | Output |
+| --- | --- | --- |
+| Build and type-check | `npm run build` | Terminal result |
+| Run all tests | `npm test` | Terminal result |
+| Offline golden-path demo | `npm run demo` | `outputs/2026-07-12/` |
+| OpenAI learning extraction from sanitized sources | `npm run founder -- demo learning digest --fixture --ai` | Private `learning-log.json` |
+| OpenAI learning extraction and Notion export | `npm run founder -- demo learning digest --fixture --ai --notion` | Private learning log and a Notion page URL |
+| Complete OpenAI-assisted digest and video | `npm run founder -- demo default end-day --fixture --storage local --ai` | Digest, story plan, captions, and video in `outputs/2026-07-12/` |
+| Notion export without calling OpenAI | `npm run founder -- demo learning sync-notion --fixture` | A Notion page using the prewritten fixture fallback |
+| Regenerate fixture learnings with OpenAI, then export them | `npm run founder -- demo learning sync-notion --fixture --ai` | Private learning log and a Notion page URL |
+| Authorize Gmail read-only access | `npm run founder -- demo learning gmail-auth` | Private OAuth token outside the repository |
+| List live Gmail newsletter candidates | `npm run founder -- demo learning inbox --live` | Terminal list and private candidate index |
+| Select newsletter candidates | `npm run founder -- demo learning select --ids 1,2,3` | Private normalized selected sources |
+| Extract learnings from selected Gmail newsletters | `npm run founder -- demo learning digest --ai` | Private `learning-log.json` |
+| Extract Gmail learnings and export to Notion | `npm run founder -- demo learning digest --ai --notion` | Private learning log and a Notion page URL |
+
+Inspect the local OpenAI learning output:
+
+```bash
+open ~/.founder-build-in-public/users/demo/days/2026-07-12/learning-log.json
+```
+
+Open the generated Founder Digest and Founder Reel:
+
+```bash
+open outputs/2026-07-12/founder-digest.html
+open outputs/2026-07-12/founder-reel.mp4
+```
+
+`--fixture` controls the input source: it uses sanitized demo newsletters instead of Gmail. `--ai` controls whether OpenAI performs learning extraction and story planning. The Remotion renderer remains deterministic after it receives the structured story plan.
+
 ## Run with live providers
 
 Copy `.env.example` to `.env`, then configure only the providers you intend to use.
@@ -123,6 +158,12 @@ To verify Notion independently of OpenAI, export the fixture learning log direct
 
 ```bash
 npm run founder -- demo learning sync-notion --fixture
+```
+
+This last command deliberately uses the prewritten fixture fallback. Add `--ai` if you want fresh OpenAI-generated fixture learnings before the Notion export:
+
+```bash
+npm run founder -- demo learning sync-notion --fixture --ai
 ```
 
 ### Current implementation
