@@ -29,7 +29,16 @@ const Scene: React.FC<{scene: StoryPlan['scenes'][number]; index: number; narrat
         {scene.type === 'terminal' && <div style={{background: '#111827', border: '1px solid #334155', borderRadius: 24, padding: '24px 28px', marginBottom: 48, color: '#7FDBCA', fontFamily: 'ui-monospace, monospace', fontSize: 28}}>● ● ●&nbsp;&nbsp; founder — fixture mode</div>}
         <h1 style={{fontSize: scene.type === 'terminal' ? 68 : 92, lineHeight: 1.02, letterSpacing: -4, margin: 0, maxWidth: 900}}>{scene.headline}</h1>
         <div style={{width: 130, height: 10, borderRadius: 10, background: scene.accent, margin: '52px 0'}} />
-        <p style={{fontSize: 43, lineHeight: 1.3, margin: 0, color: '#C9D3E6', maxWidth: 880}}>{scene.body}</p>
+        {scene.type === 'highlights' ? (
+          <div style={{display: 'grid', gap: 24}}>
+            {scene.body.split('\n\n').map((section) => {
+              const [label, detail] = section.split('\n');
+              return <div key={label} style={{background: '#111827CC', border: `1px solid ${scene.accent}66`, borderRadius: 24, padding: '28px 32px'}}><div style={{color: scene.accent, fontSize: 25, fontWeight: 800, letterSpacing: 3, marginBottom: 14}}>{label}</div><div style={{fontSize: 34, lineHeight: 1.3, color: '#E8EDF7'}}>{detail}</div></div>;
+            })}
+          </div>
+        ) : (
+          <p style={{fontSize: 43, lineHeight: 1.3, margin: 0, color: '#C9D3E6', maxWidth: 880, whiteSpace: 'pre-line'}}>{scene.body}</p>
+        )}
       </div>
       <div style={{position: 'relative', background: '#F8F5EA', color: '#101522', borderRadius: 24, padding: '30px 36px', fontSize: 35, lineHeight: 1.3, fontWeight: 650, boxShadow: `0 18px 60px ${scene.accent}22`}}>{scene.narration}</div>
     </AbsoluteFill>

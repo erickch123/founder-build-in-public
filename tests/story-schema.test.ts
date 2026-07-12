@@ -8,7 +8,7 @@ describe('story plan schema', () => {
   it('accepts the deterministic fixture planner output', async () => {
     const fixture = await loadDemoFixture();
     const manifest = buildPublicManifest({...fixture, userDisplay: 'Demo Founder'});
-    expect(StoryPlanSchema.parse(planFixtureStory(manifest)).targetDurationSeconds).toBe(56);
+    expect(StoryPlanSchema.parse(planFixtureStory(manifest)).targetDurationSeconds).toBe(45);
   });
 
   it('rejects a duration that differs from its scenes', async () => {

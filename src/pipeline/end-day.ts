@@ -8,6 +8,7 @@ import {buildPublicManifest} from '../privacy/public-manifest.js';
 import {planFixtureStory} from '../story/fixture-story-planner.js';
 import {renderFounderReel} from '../video/render-founder-reel.js';
 import type {FounderReelRenderResult} from '../video/render-founder-reel.js';
+import {configuredOpenAIModel, extractLearningWithOpenAI, planStoryWithOpenAI} from '../ai/openai-provider.js';
 
 type VideoRenderer = (story: ReturnType<typeof StoryPlanSchema.parse>, outputPath: string) => Promise<FounderReelRenderResult | void>;
 
@@ -18,6 +19,7 @@ export interface EndDayOptions {
   storage: 'local';
   outputRoot?: string;
   renderer?: VideoRenderer;
+  ai?: boolean;
 }
 
 export interface EndDayResult {
@@ -47,21 +49,22 @@ export const runEndDay = async (options: EndDayOptions): Promise<EndDayResult> =
   const outputDirectory = resolve(options.outputRoot ?? 'outputs', fixture.date);
   await mkdir(outputDirectory, {recursive: true});
 
+  const learnings = options.ai ? await extractLearningWithOpenAI(fixture.sources) : fixture.learnings;
   const manifest = buildPublicManifest({
     date: fixture.date,
     userDisplay: options.userId === 'demo' ? 'Demo Founder' : options.userId,
     events: fixture.events,
-    learnings: fixture.learnings,
+    learnings,
     sources: fixture.sources,
     workspaces: fixture.workspaces,
   });
-  const story = planFixtureStory(manifest);
+  const story = options.ai ? await planStoryWithOpenAI(manifest) : planFixtureStory(manifest);
   const digestMarkdown = compileDigestMarkdown(manifest, story);
   const digestHtml = compileDigestHtml(manifest, story);
   const videoPath = resolve(outputDirectory, 'founder-reel.mp4');
 
   await Promise.all([
-    writeJson(resolve(outputDirectory, 'learning-log.json'), fixture.learnings),
+    writeJson(resolve(outputDirectory, 'learning-log.json'), learnings),
     writeJson(resolve(outputDirectory, 'public-manifest.json'), manifest),
     writeJson(resolve(outputDirectory, 'story-plan.json'), story),
     writeFile(resolve(outputDirectory, 'founder-digest.md'), digestMarkdown, 'utf8'),
@@ -83,7 +86,8 @@ export const runEndDay = async (options: EndDayOptions): Promise<EndDayResult> =
     sourceCount: fixture.sources.length,
     selectedSourceCount: fixture.sources.filter((source) => source.selected).length,
     excludedConfidentialEvents,
-    modelProvider: 'deterministic-fixture',
+    modelProvider: options.ai ? 'openai' : 'deterministic-fixture',
+    model: options.ai ? configuredOpenAIModel() : null,
     stagesCompleted: ['collect', 'normalize', 'curate', 'extract', 'classify', 'privacy-filter', 'plan-story', 'compile-digest', 'render-video'],
     artifacts: ['learning-log.json', 'public-manifest.json', 'story-plan.json', 'founder-digest.md', 'founder-digest.html', 'video-script.md', 'captions.srt', 'founder-reel.mp4'],
     voiceProvider: renderResult?.voiceProvider ?? 'test-renderer',

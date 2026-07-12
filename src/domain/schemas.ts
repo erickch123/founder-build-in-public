@@ -74,7 +74,7 @@ export const PublicManifestSchema = z.object({
 
 export const SceneSchema = z.object({
   id: z.string().min(1),
-  type: z.enum(['hook', 'moments', 'problem', 'terminal', 'outputs', 'lesson', 'reveal']),
+  type: z.enum(['hook', 'moments', 'problem', 'terminal', 'outputs', 'highlights', 'lesson', 'reveal']),
   durationSeconds: z.number().int().positive(),
   headline: z.string().min(1),
   body: z.string().min(1),

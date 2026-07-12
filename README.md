@@ -73,7 +73,45 @@ npm test
 npm run demo
 ```
 
-The demo writes private-by-default, gitignored artifacts to `outputs/2026-07-12/` and renders a 1080×1920, 56-second Founder Reel.
+The demo writes private-by-default, gitignored artifacts to `outputs/2026-07-12/` and renders a 1080×1920, 45-second Founder Reel.
+
+## Run with live providers
+
+Copy `.env.example` to `.env`, then configure only the providers you intend to use.
+
+### OpenAI structured generation
+
+```bash
+OPENAI_API_KEY=...
+OPENAI_MODEL=gpt-5.6-luna
+
+npm run founder -- demo default end-day --fixture --storage local --ai
+```
+
+Selected, cleaned newsletter text is sent to OpenAI for structured learning extraction. Public story planning receives only the public-safe manifest; rendering remains deterministic.
+
+### Gmail read-only curation
+
+Create a Google OAuth desktop client with the Gmail API enabled, then set `GMAIL_CLIENT_ID` and `GMAIL_CLIENT_SECRET`. Authorize and run the human-curated flow:
+
+```bash
+npm run founder -- demo learning gmail-auth
+npm run founder -- demo learning inbox --live
+npm run founder -- demo learning select --ids 1,2,3
+npm run founder -- demo learning digest --ai
+```
+
+OAuth uses `gmail.readonly`. Candidate metadata is listed first; full bodies are fetched only for selected IDs. Tokens and selected bodies live under `~/.founder-build-in-public/`, never in the repository.
+
+### Optional Notion export
+
+Create a Notion integration, share one parent page with it, set `NOTION_API_KEY` and `NOTION_PARENT_PAGE_ID`, then run:
+
+```bash
+npm run founder -- demo learning digest --ai --notion
+```
+
+Notion receives the structured learning log, not raw email bodies. Export failure is reported as a warning and does not delete the local log.
 
 ### Current implementation
 
@@ -88,7 +126,7 @@ Working now:
 - data-driven Remotion Founder Reel rendering with timed system narration;
 - unit, schema, privacy, and fixture end-to-end tests.
 
-Fixture mode uses the macOS system voice for local narration and falls back honestly to a caption-led render when it is unavailable. Live Gmail, OpenAI generation, GCS delivery, and optional Notion/Git integrations remain explicit follow-up milestones.
+Fixture mode uses the macOS system voice for local narration and falls back honestly to a caption-led render when it is unavailable. OpenAI structured output, Gmail read-only curation, and optional Notion export are implemented behind explicit flags; GCS and Git remain follow-up milestones.
 
 ## Recommended command model
 
