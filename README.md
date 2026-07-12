@@ -113,6 +113,18 @@ npm run founder -- demo learning digest --ai --notion
 
 Notion receives the structured learning log, not raw email bodies. Export failure is reported as a warning and does not delete the local log.
 
+To test OpenAI and Notion before Gmail is configured, use the sanitized fixture sources:
+
+```bash
+npm run founder -- demo learning digest --fixture --ai --notion
+```
+
+To verify Notion independently of OpenAI, export the fixture learning log directly:
+
+```bash
+npm run founder -- demo learning sync-notion --fixture
+```
+
 ### Current implementation
 
 Working now:
