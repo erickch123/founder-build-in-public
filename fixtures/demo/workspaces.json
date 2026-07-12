@@ -1,0 +1,7 @@
+[
+  {"id":"default","name":"Overall day","type":"aggregate","visibility":"private","aggregateIntoDefault":true,"allowPublicOutput":false},
+  {"id":"learning","name":"Learning","type":"learning","visibility":"public-review","aggregateIntoDefault":true,"allowPublicOutput":true},
+  {"id":"personal","name":"Personal","type":"personal","visibility":"public-review","aggregateIntoDefault":true,"allowPublicOutput":true},
+  {"id":"hackathon","name":"Hackathon","type":"side-project","visibility":"public-review","aggregateIntoDefault":true,"allowPublicOutput":true},
+  {"id":"cadt","name":"Confidential employment","type":"employment","visibility":"confidential","aggregateIntoDefault":false,"allowPublicOutput":false}
+]

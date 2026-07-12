@@ -6,13 +6,14 @@
 |---|---|
 | Repository | `founder-build-in-public` |
 | Target | Technical solo founders and indie hackers |
+| Customer problem | Builders want to build in public without taking on a second job as content creators |
 | Surface | Terminal-first |
 | Framework | Hermes skill around a standalone CLI |
 | Core inputs | Curated Gmail newsletters + manual captures |
 | Optional inputs | Git, Notion, calendar |
 | Canonical store | Local structured files |
-| End output 1 | Daily or weekly Founder Digest |
-| End output 2 | Faceless 45–60 second vertical video |
+| End output 1 | Daily or weekly newsletter-style Founder Digest |
+| End output 2 | Faceless 45–60 second vertical Founder Reel |
 | Video engine | Remotion |
 | LLM | Low-cost OpenAI API model, configurable |
 | Development assistant | Codex through ChatGPT Pro |
@@ -52,9 +53,10 @@ Gmail or fixture candidates
 → local founder log
 → manual progress captures
 → workspace/privacy filter
+→ public-safe manifest
 → story plan
-→ digest
-→ Remotion reel
+→ Founder Digest
+→ Remotion Founder Reel
 → private GCS link
 ```
 

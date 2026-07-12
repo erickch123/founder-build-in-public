@@ -2,16 +2,16 @@
 
 ## 1. Product summary
 
-**Founder Build in Public** is a local-first, workspace-aware agent for solo founders. It turns selected newsletter knowledge and founder activity into two review-ready outputs:
+**Founder Build in Public** is a local-first, workspace-aware content-creation agent for solo founders. It turns selected learning and founder activity into two review-ready outputs:
 
-1. a daily or weekly **Founder Digest**; and
-2. a 45–60 second **faceless vertical video** stored privately in cloud storage.
+1. a daily or weekly, newsletter-style **Founder Digest**; and
+2. a 45–60 second faceless vertical **Founder Reel**.
 
 The founder remains the editor. The system retrieves and organizes information, but the founder chooses which emails matter and approves anything intended for public use.
 
 ## 2. Problem
 
-Solo founders continuously:
+Solo founders are naturally focused on building, not operating a content studio. They continuously:
 
 - read newsletters and research;
 - make decisions;
@@ -20,21 +20,21 @@ Solo founders continuously:
 - take scattered notes;
 - know that building in public could grow trust and distribution.
 
-The problem is that converting this activity into good content requires another workflow:
+Building in public can grow trust and distribution, but converting this activity into good content creates a second job:
 
 ```text
 remember → curate → summarize → find a story → write → narrate → edit → upload
 ```
 
-This often means the content is never created, or it becomes shallow automated spam.
+This often means content is never created, or it becomes shallow automated spam that does not reflect the real work.
 
 ## 3. Product thesis
 
-A founder should not have to create content from a blank page.
+A founder should not have to stop building and become a full-time content creator.
 
 The agent should reconstruct a story from **founder-approved evidence**, preserve workspace and privacy boundaries, and compile that story into reusable media.
 
-The product is not “AI video generation.” It is a:
+Building in public should be an output of building—not another time-consuming job. The product is not “AI video generation.” It is a:
 
 > workspace-aware founder-story compiler.
 

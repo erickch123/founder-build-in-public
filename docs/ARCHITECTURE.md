@@ -46,10 +46,11 @@ flowchart TB
 
     NORM --> STORE[Local Founder Store]
     STORE --> EXTRACT[Learning Extractor]
-    EXTRACT --> STORY[Story Planner]
-    STORY --> PRIV[Privacy Gate]
-    PRIV --> DIGEST[Digest Compiler]
-    PRIV --> SCENES[Scene-plan Compiler]
+    EXTRACT --> PRIV[Privacy Gate]
+    PRIV --> MANIFEST[Public-safe Manifest]
+    MANIFEST --> STORY[Story Planner]
+    STORY --> DIGEST[Digest Compiler]
+    STORY --> SCENES[Scene-plan Compiler]
 
     SCENES --> VOICE[Voice Adapter]
     SCENES --> REMOTION[Remotion Renderer]
@@ -181,9 +182,22 @@ Output:
 
 For cost control, selected messages should be cleaned and batched where practical. The final story planner should receive compact learning objects, not raw email bodies.
 
-### 4.7 Story planner
+### 4.7 Privacy gate
 
-The planner creates one editorial thesis, rather than listing every event.
+The privacy gate runs before planning or compiling every public artifact.
+
+It must:
+
+- deny confidential workspaces by default;
+- remove email addresses, private names, URLs, IDs, and secrets;
+- avoid quoting private newsletter text at length;
+- mark unsupported claims;
+- create a standalone `public-manifest.json`;
+- require the public story planner, video, and public digest to read founder data only from that manifest.
+
+### 4.8 Story planner
+
+The planner creates one editorial thesis from the public-safe manifest, rather than listing every event.
 
 Required decisions:
 
@@ -200,19 +214,6 @@ Required decisions:
 Example thesis for the hackathon day:
 
 > I turned an existing habit—reading every useful newsletter—into an agent that captures learning and converts it into build-in-public media.
-
-### 4.8 Privacy gate
-
-The privacy gate runs before every public artifact.
-
-It must:
-
-- deny confidential workspaces by default;
-- remove email addresses, private names, URLs, IDs, and secrets;
-- avoid quoting private newsletter text at length;
-- mark unsupported claims;
-- create a standalone `public-manifest.json`;
-- require the video and public digest to read only from that manifest.
 
 ### 4.9 Digest compiler
 
@@ -281,9 +282,11 @@ sequenceDiagram
 
     Founder->>CLI: end-day
     CLI->>Store: load approved events and learning
-    CLI->>LLM: generate structured story plan
-    LLM-->>CLI: story + public-safe candidates
-    CLI->>Store: write public-manifest and scene plan
+    CLI->>CLI: apply workspace policy and privacy gate
+    CLI->>Store: write public-manifest
+    CLI->>LLM: generate story plan from public-manifest
+    LLM-->>CLI: structured story plan
+    CLI->>Store: write scene plan
     CLI->>Remotion: render scene plan + narration
     Remotion-->>CLI: founder-reel.mp4
     CLI->>GCS: private upload

@@ -1,0 +1,7 @@
+[
+  {"id":"evt_001","userId":"demo","workspaceId":"personal","occurredAt":"2026-07-12T07:30:00+08:00","eventType":"personal_activity","summary":"Watched an Argentina football match before starting the day","sourceIds":[],"visibility":"public-review","confidence":1,"tags":["football","morning"]},
+  {"id":"evt_002","userId":"demo","workspaceId":"learning","occurredAt":"2026-07-12T09:00:00+08:00","eventType":"learning","summary":"Curated useful newsletters over coffee","sourceIds":["src_001","src_002","src_003"],"visibility":"public-review","confidence":1,"tags":["newsletter","coffee"]},
+  {"id":"evt_003","userId":"demo","workspaceId":"hackathon","occurredAt":"2026-07-12T11:20:00+08:00","eventType":"decision","summary":"Planned a privacy-first fixture pipeline for the hackathon","sourceIds":[],"visibility":"public-review","confidence":1,"tags":["planning","privacy"]},
+  {"id":"evt_004","userId":"demo","workspaceId":"hackathon","occurredAt":"2026-07-12T15:30:00+08:00","eventType":"build_progress","summary":"Built the agent that generated this Founder Reel","sourceIds":[],"visibility":"public-review","confidence":1,"tags":["build","video"]},
+  {"id":"evt_005","userId":"demo","workspaceId":"cadt","occurredAt":"2026-07-12T10:00:00+08:00","eventType":"build_progress","summary":"CONFIDENTIAL_CADT_ALPHA must never appear in public outputs","sourceIds":[],"visibility":"confidential","confidence":1,"tags":["confidential"]}
+]

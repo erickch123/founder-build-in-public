@@ -1,11 +1,20 @@
-# Founder Build in Public — Project Starter Pack
+# Founder Build in Public
 
 **Repository name:** `founder-build-in-public`  
 **Product name:** Founder Build in Public  
 **Hackathon:** BUIDL_OPC_Hackathon_SG 2026  
-**Core promise:** Turn the work and learning a solo founder already does into a curated founder digest and a polished, faceless build-in-public video.
+**Core promise:** Turn the work and learning a solo founder already does into a polished, newsletter-style Founder Digest and a faceless build-in-public video.
 
-> Building in public should be an output of building, not another job.
+> Building in public should be an output of building—not another time-consuming job.
+
+Builders are naturally focused on coding, learning, and shipping—not scripting, narrating, and editing content. Founder Build in Public turns founder-approved evidence from that existing work into two review-ready drafts: a **Founder Digest** and a **Founder Reel**.
+
+## Two outputs from one founder story
+
+- **Founder Digest:** a newsletter-style daily or weekly summary of what the founder learned, built, decided, and plans to do next.
+- **Founder Reel:** a polished, faceless 45–60 second vertical video with narration and readable captions.
+
+Both outputs are grounded in the same curated evidence and public-safe manifest. The founder reviews the drafts; the product never publishes automatically.
 
 ## Start here
 
@@ -30,9 +39,9 @@ flowchart LR
     F --> D
     D --> G[Privacy and workspace filter]
     G --> H[Story planner]
-    H --> I[Founder Digest]
+    H --> I[Newsletter-style Founder Digest]
     H --> J[Remotion scene plan]
-    J --> K[Faceless vertical video]
+    J --> K[Faceless Founder Reel]
     K --> L[Private GCS object + signed URL]
 ```
 
@@ -52,6 +61,34 @@ outputs/<date>/
 ├── founder-reel.mp4
 └── run-manifest.json
 ```
+
+## Run the fixture golden path
+
+Requires Node.js 20 or newer. Fixture mode uses synthetic data and does not require provider credentials.
+
+```bash
+npm install
+npm run build
+npm test
+npm run demo
+```
+
+The demo writes private-by-default, gitignored artifacts to `outputs/2026-07-12/` and renders a 1080×1920, 56-second Founder Reel.
+
+### Current implementation
+
+Working now:
+
+- strict TypeScript domain schemas and CLI;
+- synthetic newsletter and founder-activity fixtures;
+- workspace-aware privacy filtering and public-safe manifest compilation;
+- deterministic fixture story planning;
+- Markdown and HTML Founder Digest generation;
+- caption and script generation;
+- data-driven Remotion Founder Reel rendering;
+- unit, schema, privacy, and fixture end-to-end tests.
+
+The first playable render is caption-led. Narration audio, live Gmail, OpenAI generation, GCS delivery, and optional Notion/Git integrations remain explicit follow-up milestones.
 
 ## Recommended command model
 

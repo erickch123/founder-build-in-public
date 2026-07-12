@@ -2,16 +2,19 @@
 
 ## 1. Strategy
 
-Build one end-to-end golden path before adding integrations.
+Build one end-to-end content-creation golden path before adding integrations. The first milestone must prove that work a founder already performed can become polished content without requiring a separate writing and editing workflow.
 
 The order is:
 
 ```text
 fixture evidence
 → normalized record
-→ structured story
-→ digest
-→ Remotion MP4
+→ structured learning and founder events
+→ workspace/privacy filter
+→ public-safe manifest
+→ structured story plan
+→ newsletter-style Founder Digest
+→ Remotion Founder Reel
 → private cloud link
 → Gmail live input
 → optional Notion
@@ -27,7 +30,7 @@ The project is done enough when:
 founder demo default end-day --fixture
 ```
 
-creates a digest and a video that can be opened locally.
+creates a newsletter-style Founder Digest and a faceless Founder Reel that can be opened locally.
 
 GCS upload, Gmail live mode, Notion, and additional polish improve the submission but must not prevent this baseline.
 
@@ -158,7 +161,7 @@ Suggested commit:
 feat: compile daily founder digest
 ```
 
-### 14:50–16:10 — Remotion video
+### 14:50–16:10 — Remotion Founder Reel
 
 Deliver:
 
