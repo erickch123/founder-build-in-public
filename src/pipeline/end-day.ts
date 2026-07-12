@@ -7,8 +7,9 @@ import {loadDemoFixture} from '../fixtures/load-demo-fixture.js';
 import {buildPublicManifest} from '../privacy/public-manifest.js';
 import {planFixtureStory} from '../story/fixture-story-planner.js';
 import {renderFounderReel} from '../video/render-founder-reel.js';
+import type {FounderReelRenderResult} from '../video/render-founder-reel.js';
 
-type VideoRenderer = (story: ReturnType<typeof StoryPlanSchema.parse>, outputPath: string) => Promise<void>;
+type VideoRenderer = (story: ReturnType<typeof StoryPlanSchema.parse>, outputPath: string) => Promise<FounderReelRenderResult | void>;
 
 export interface EndDayOptions {
   userId: string;
@@ -26,6 +27,8 @@ export interface EndDayResult {
   storyTitle: string;
   durationSeconds: number;
   excludedConfidentialEvents: number;
+  narrated: boolean;
+  voiceProvider: string;
 }
 
 const writeJson = async (path: string, value: unknown): Promise<void> =>
@@ -67,7 +70,7 @@ export const runEndDay = async (options: EndDayOptions): Promise<EndDayResult> =
     writeFile(resolve(outputDirectory, 'captions.srt'), compileSrt(story), 'utf8'),
   ]);
 
-  await (options.renderer ?? renderFounderReel)(story, videoPath);
+  const renderResult = await (options.renderer ?? renderFounderReel)(story, videoPath);
 
   const excludedConfidentialEvents = fixture.events.filter((event) => event.visibility === 'confidential').length;
   await writeJson(resolve(outputDirectory, 'run-manifest.json'), {
@@ -83,7 +86,8 @@ export const runEndDay = async (options: EndDayOptions): Promise<EndDayResult> =
     modelProvider: 'deterministic-fixture',
     stagesCompleted: ['collect', 'normalize', 'curate', 'extract', 'classify', 'privacy-filter', 'plan-story', 'compile-digest', 'render-video'],
     artifacts: ['learning-log.json', 'public-manifest.json', 'story-plan.json', 'founder-digest.md', 'founder-digest.html', 'video-script.md', 'captions.srt', 'founder-reel.mp4'],
-    warnings: ['Narration audio is not included in the first playable render. Captions contain the approved narration.'],
+    voiceProvider: renderResult?.voiceProvider ?? 'test-renderer',
+    warnings: renderResult && !renderResult.narrated ? ['System narration was unavailable; the reel is caption-led.'] : [],
   });
 
   return {
@@ -93,5 +97,7 @@ export const runEndDay = async (options: EndDayOptions): Promise<EndDayResult> =
     storyTitle: story.title,
     durationSeconds: story.targetDurationSeconds,
     excludedConfidentialEvents,
+    narrated: renderResult?.narrated ?? false,
+    voiceProvider: renderResult?.voiceProvider ?? 'test-renderer',
   };
 };

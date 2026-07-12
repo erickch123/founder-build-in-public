@@ -31,7 +31,7 @@ try {
   console.log(`✓ Rendered ${result.durationSeconds}-second Founder Reel`);
   console.log(`\nDigest  ${result.digestPath}`);
   console.log(`Video   ${result.videoPath}`);
-  console.log('Mode    fixture · local storage · caption-led');
+  console.log(`Mode    fixture · local storage · ${result.narrated ? `narrated (${result.voiceProvider})` : 'caption-led'}`);
 } catch (error) {
   console.error(`\nError: ${error instanceof Error ? error.message : String(error)}`);
   process.exitCode = 1;

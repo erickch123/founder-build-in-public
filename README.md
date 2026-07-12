@@ -85,10 +85,10 @@ Working now:
 - deterministic fixture story planning;
 - Markdown and HTML Founder Digest generation;
 - caption and script generation;
-- data-driven Remotion Founder Reel rendering;
+- data-driven Remotion Founder Reel rendering with timed system narration;
 - unit, schema, privacy, and fixture end-to-end tests.
 
-The first playable render is caption-led. Narration audio, live Gmail, OpenAI generation, GCS delivery, and optional Notion/Git integrations remain explicit follow-up milestones.
+Fixture mode uses the macOS system voice for local narration and falls back honestly to a caption-led render when it is unavailable. Live Gmail, OpenAI generation, GCS delivery, and optional Notion/Git integrations remain explicit follow-up milestones.
 
 ## Recommended command model
 

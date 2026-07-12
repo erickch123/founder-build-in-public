@@ -1,6 +1,7 @@
 import React from 'react';
 import {
   AbsoluteFill,
+  Audio,
   Easing,
   Sequence,
   interpolate,
@@ -10,7 +11,7 @@ import {
 } from 'remotion';
 import type {StoryPlan} from '../src/domain/schemas.js';
 
-const Scene: React.FC<{scene: StoryPlan['scenes'][number]; index: number}> = ({scene, index}) => {
+const Scene: React.FC<{scene: StoryPlan['scenes'][number]; index: number; narrationDataUrl: string | undefined}> = ({scene, index, narrationDataUrl}) => {
   const frame = useCurrentFrame();
   const {fps} = useVideoConfig();
   const enter = spring({frame, fps, config: {damping: 16, stiffness: 120}});
@@ -19,6 +20,7 @@ const Scene: React.FC<{scene: StoryPlan['scenes'][number]; index: number}> = ({s
 
   return (
     <AbsoluteFill style={{background: '#090D18', color: '#F8F5EA', fontFamily: 'Inter, ui-sans-serif, system-ui', padding: '150px 90px 130px', opacity: fade, overflow: 'hidden'}}>
+      {narrationDataUrl && <Audio src={narrationDataUrl} volume={0.95} />}
       <div style={{position: 'absolute', inset: '-20% -50%', background: `radial-gradient(circle at 50% 45%, ${scene.accent}30, transparent 42%)`, transform: `scale(${1 + frame / (fps * 100)})`}} />
       <div style={{position: 'relative', display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: scene.accent, fontSize: 28, fontWeight: 700, letterSpacing: 4, textTransform: 'uppercase'}}>
         <span>Founder Build in Public</span><span>{String(index + 1).padStart(2, '0')}</span>
@@ -34,7 +36,7 @@ const Scene: React.FC<{scene: StoryPlan['scenes'][number]; index: number}> = ({s
   );
 };
 
-export const FounderReel: React.FC<{story: StoryPlan}> = ({story}) => {
+export const FounderReel: React.FC<{story: StoryPlan; narrationDataUrls: string[]}> = ({story, narrationDataUrls}) => {
   let start = 0;
   return (
     <AbsoluteFill style={{background: '#090D18'}}>
@@ -42,7 +44,7 @@ export const FounderReel: React.FC<{story: StoryPlan}> = ({story}) => {
         const from = start;
         const duration = scene.durationSeconds * 30;
         start += duration;
-        return <Sequence key={scene.id} from={from} durationInFrames={duration}><Scene scene={scene} index={index} /></Sequence>;
+        return <Sequence key={scene.id} from={from} durationInFrames={duration}><Scene scene={scene} index={index} narrationDataUrl={narrationDataUrls[index]} /></Sequence>;
       })}
     </AbsoluteFill>
   );
