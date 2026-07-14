@@ -2,7 +2,7 @@ import type {LearningItem} from '../domain/schemas.js';
 
 const richText = (content: string) => [{type: 'text', text: {content: content.slice(0, 1_900)}}];
 
-export const exportLearningToNotion = async (date: string, learnings: LearningItem[]): Promise<string> => {
+export const exportLearningToNotion = async (timestamp: string, learnings: LearningItem[]): Promise<string> => {
   const {NOTION_API_KEY, NOTION_PARENT_PAGE_ID} = process.env;
   if (!NOTION_API_KEY || !NOTION_PARENT_PAGE_ID) {
     throw new Error('Notion export requires NOTION_API_KEY and NOTION_PARENT_PAGE_ID.');
@@ -18,7 +18,7 @@ export const exportLearningToNotion = async (date: string, learnings: LearningIt
     headers: {Authorization: `Bearer ${NOTION_API_KEY}`, 'Content-Type': 'application/json', 'Notion-Version': '2026-03-11'},
     body: JSON.stringify({
       parent: {page_id: NOTION_PARENT_PAGE_ID},
-      properties: {title: {title: richText(`Founder Learning — ${date}`)}},
+      properties: {title: {title: richText(`Founder Learning — ${timestamp}`)}},
       children,
     }),
   });

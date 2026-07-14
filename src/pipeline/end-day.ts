@@ -1,6 +1,6 @@
 import {mkdir, writeFile} from 'node:fs/promises';
 import {resolve} from 'node:path';
-import {StoryPlanSchema} from '../domain/schemas.js';
+import {StoryPlanSchema, type FounderEvent} from '../domain/schemas.js';
 import {compileSrt} from '../digest/captions.js';
 import {compileDigestHtml, compileDigestMarkdown} from '../digest/compile-digest.js';
 import {loadDemoFixture} from '../fixtures/load-demo-fixture.js';
@@ -9,6 +9,7 @@ import {planFixtureStory} from '../story/fixture-story-planner.js';
 import {renderFounderReel} from '../video/render-founder-reel.js';
 import type {FounderReelRenderResult} from '../video/render-founder-reel.js';
 import {configuredOpenAIModel, extractLearningWithOpenAI, planStoryWithOpenAI} from '../ai/openai-provider.js';
+import {reflectionEvidence, type ManualReflection} from '../reflections/manual-reflections.js';
 
 type VideoRenderer = (story: ReturnType<typeof StoryPlanSchema.parse>, outputPath: string) => Promise<FounderReelRenderResult | void>;
 
@@ -20,6 +21,8 @@ export interface EndDayOptions {
   outputRoot?: string;
   renderer?: VideoRenderer;
   ai?: boolean;
+  manualReflections?: ManualReflection[];
+  manualCaptures?: FounderEvent[];
 }
 
 export interface EndDayResult {
@@ -49,13 +52,17 @@ export const runEndDay = async (options: EndDayOptions): Promise<EndDayResult> =
   const outputDirectory = resolve(options.outputRoot ?? 'outputs', fixture.date);
   await mkdir(outputDirectory, {recursive: true});
 
-  const learnings = options.ai ? await extractLearningWithOpenAI(fixture.sources) : fixture.learnings;
+  const generatedLearnings = options.ai ? await extractLearningWithOpenAI(fixture.sources) : fixture.learnings;
+  const manual = reflectionEvidence(options.manualReflections ?? []);
+  const learnings = [...generatedLearnings, ...manual.learnings];
+  const sources = [...fixture.sources, ...manual.sources];
+  const events = [...fixture.events, ...(options.manualCaptures ?? [])];
   const manifest = buildPublicManifest({
     date: fixture.date,
     userDisplay: options.userId === 'demo' ? 'Demo Founder' : options.userId,
-    events: fixture.events,
+    events,
     learnings,
-    sources: fixture.sources,
+    sources,
     workspaces: fixture.workspaces,
   });
   const story = options.ai ? await planStoryWithOpenAI(manifest) : planFixtureStory(manifest);
@@ -75,7 +82,7 @@ export const runEndDay = async (options: EndDayOptions): Promise<EndDayResult> =
 
   const renderResult = await (options.renderer ?? renderFounderReel)(story, videoPath);
 
-  const excludedConfidentialEvents = fixture.events.filter((event) => event.visibility === 'confidential').length;
+  const excludedConfidentialEvents = events.filter((event) => event.visibility === 'confidential').length;
   await writeJson(resolve(outputDirectory, 'run-manifest.json'), {
     runId: `fixture-${fixture.date}-${Date.now()}`,
     startedAt,
@@ -83,8 +90,8 @@ export const runEndDay = async (options: EndDayOptions): Promise<EndDayResult> =
     mode: 'fixture',
     userId: options.userId,
     workspaceId: options.workspaceId,
-    sourceCount: fixture.sources.length,
-    selectedSourceCount: fixture.sources.filter((source) => source.selected).length,
+    sourceCount: sources.length,
+    selectedSourceCount: sources.filter((source) => source.selected).length,
     excludedConfidentialEvents,
     modelProvider: options.ai ? 'openai' : 'deterministic-fixture',
     model: options.ai ? configuredOpenAIModel() : null,

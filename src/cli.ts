@@ -4,9 +4,17 @@ import {runEndDay} from './pipeline/end-day.js';
 import {extractLearningWithOpenAI} from './ai/openai-provider.js';
 import {authorizeGmail, fetchSelectedNewsletters, listNewsletterCandidates, type GmailCandidate} from './gmail/gmail-adapter.js';
 import {exportLearningToNotion} from './notion/notion-export.js';
-import {readPrivateJson, singaporeDate, writePrivateJson} from './store/local-store.js';
+import {readPrivateJson, singaporeTimestamp, writePrivateJson} from './store/local-store.js';
 import type {LearningItem, SourceItem} from './domain/schemas.js';
 import {loadDemoFixture} from './fixtures/load-demo-fixture.js';
+import {
+  appendManualReflection,
+  createManualReflection,
+  mergeLearnings,
+  readManualReflections,
+  reflectionEvidence,
+} from './reflections/manual-reflections.js';
+import {appendManualCapture, createManualCapture, readManualCaptures} from './captures/manual-captures.js';
 
 loadProjectEnvironment();
 
@@ -18,6 +26,11 @@ const notion = args.includes('--notion');
 const live = args.includes('--live');
 const storageIndex = args.indexOf('--storage');
 const storage = storageIndex >= 0 ? args[storageIndex + 1] : 'local';
+const optionValue = (name: string): string | undefined => {
+  const index = args.indexOf(name);
+  const value = index >= 0 ? args[index + 1] : undefined;
+  return value && !value.startsWith('--') ? value : undefined;
+};
 
 const usage = (): never => {
   console.error('Usage: founder <user> <workspace> end-day --fixture --storage local');
@@ -29,6 +42,43 @@ const userId = userArg as string;
 const workspaceId = workspaceArg as string;
 const command = commandArg as string;
 try {
+  if (command === 'capture') {
+    const positionalText = args[3] && !args[3].startsWith('--') ? args[3] : undefined;
+    const text = optionValue('--text') ?? positionalText;
+    if (!text) {
+      throw new Error('capture requires --text "...". Optional: --tags "tag-one,tag-two" --public.');
+    }
+    const capture = createManualCapture({
+      userId,
+      workspaceId,
+      text,
+      tags: (optionValue('--tags') ?? '').split(',').map((tag) => tag.trim()).filter(Boolean),
+      publicRequested: args.includes('--public'),
+    });
+    const path = await appendManualCapture(userId, capture);
+    console.log(`✓ Saved ${workspaceId} capture (${capture.visibility})\nCaptures  ${path}`);
+    if (capture.visibility === 'confidential') {
+      console.log('Privacy   excluded from public digest, video, and learning exports');
+    }
+    process.exit(0);
+  }
+  if (workspaceId === 'learning' && command === 'reflect') {
+    const text = optionValue('--text');
+    if (!text) {
+      throw new Error('reflect requires --text "...". Optional: --topic "..." --why "..." --next "..." --public.');
+    }
+    const nextAction = optionValue('--next');
+    const reflection = createManualReflection({
+      topic: optionValue('--topic') ?? 'Founder reflection',
+      text,
+      whyItMatters: optionValue('--why') ?? 'This founder-authored reflection adds context that automated extraction may miss.',
+      ...(nextAction ? {nextAction} : {}),
+      publicSafe: args.includes('--public'),
+    });
+    const path = await appendManualReflection(userId, reflection);
+    console.log(`✓ Saved manual reflection (${reflection.learning.publicSafe ? 'approved for public drafts' : 'private'})\nReflections  ${path}`);
+    process.exit(0);
+  }
   if (workspaceId === 'learning' && command === 'gmail-auth') {
     const path = await authorizeGmail();
     console.log(`✓ Gmail read-only token saved privately\nCredential  ${path}`);
@@ -59,12 +109,13 @@ try {
   if (workspaceId === 'learning' && command === 'sync-notion') {
     let learnings: LearningItem[];
     let sourceLabel: string;
+    let generatedWithAi = false;
     if (fixture) {
       const demoFixture = await loadDemoFixture();
       if (ai) {
         learnings = await extractLearningWithOpenAI(demoFixture.sources.filter((source) => source.selected));
-        await writePrivateJson(userId, 'learning-log.json', learnings);
         sourceLabel = 'AI-generated fixture learnings';
+        generatedWithAi = true;
       } else {
         learnings = demoFixture.learnings;
         sourceLabel = 'prewritten fixture fallback';
@@ -80,7 +131,10 @@ try {
         throw error;
       }
     }
-    const url = await exportLearningToNotion(singaporeDate(), learnings);
+    const manual = reflectionEvidence(await readManualReflections(userId)).learnings;
+    learnings = mergeLearnings(learnings, manual);
+    if (generatedWithAi) await writePrivateJson(userId, 'learning-log.json', learnings);
+    const url = await exportLearningToNotion(singaporeTimestamp(), learnings);
     console.log(`✓ Exported ${learnings.length} learnings to Notion (${sourceLabel})\nNotion  ${url}`);
     process.exit(0);
   }
@@ -100,13 +154,15 @@ try {
         throw error;
       }
     }
-    const learnings = await extractLearningWithOpenAI(sources);
+    const generated = await extractLearningWithOpenAI(sources);
+    const manual = reflectionEvidence(await readManualReflections(userId)).learnings;
+    const learnings = mergeLearnings(generated, manual);
     const path = await writePrivateJson(userId, 'learning-log.json', learnings);
     console.log(`✓ Extracted ${learnings.length} structured learnings with OpenAI`);
     console.log(`Learning log  ${path}`);
     if (notion) {
       try {
-        const url = await exportLearningToNotion(singaporeDate(), learnings);
+        const url = await exportLearningToNotion(singaporeTimestamp(), learnings);
         console.log(`Notion        ${url}`);
       } catch (error) {
         console.warn(`Warning: ${error instanceof Error ? error.message : String(error)}`);
@@ -118,7 +174,9 @@ try {
   if (storage !== 'local') throw new Error('Only local storage is implemented in the golden path.');
   console.log('Founder Build in Public — fixture golden path\n');
   console.log('… Loading sanitized, user-curated fixture evidence');
-  const result = await runEndDay({userId, workspaceId, fixture, storage: 'local', ai});
+  const manualReflections = await readManualReflections(userId);
+  const manualCaptures = await readManualCaptures(userId);
+  const result = await runEndDay({userId, workspaceId, fixture, storage: 'local', ai, manualReflections, manualCaptures});
   console.log('✓ Loaded 3 sanitized, user-curated newsletter fixtures');
   console.log(`✓ Excluded ${result.excludedConfidentialEvents} confidential workspace event`);
   console.log(`✓ Selected story: ${result.storyTitle}`);

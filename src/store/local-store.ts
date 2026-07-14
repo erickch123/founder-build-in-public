@@ -6,6 +6,16 @@ export const singaporeDate = (): string => new Intl.DateTimeFormat('en-CA', {
   timeZone: 'Asia/Singapore', year: 'numeric', month: '2-digit', day: '2-digit',
 }).format(new Date());
 
+export const singaporeTimestamp = (date = new Date()): string => {
+  const calendarDate = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Asia/Singapore', year: 'numeric', month: '2-digit', day: '2-digit',
+  }).format(date);
+  const time = new Intl.DateTimeFormat('en-GB', {
+    timeZone: 'Asia/Singapore', hour: '2-digit', minute: '2-digit', second: '2-digit', hourCycle: 'h23',
+  }).format(date);
+  return `${calendarDate} ${time} SGT`;
+};
+
 export const appDataRoot = (): string => process.env.FOUNDER_DATA_DIR || resolve(homedir(), '.founder-build-in-public');
 
 export const dayDirectory = (userId: string, date = singaporeDate()): string => resolve(

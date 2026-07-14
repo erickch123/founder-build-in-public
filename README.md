@@ -84,6 +84,9 @@ Run these commands from the repository root. Until the package is installed glob
 | Build and type-check | `npm run build` | Terminal result |
 | Run all tests | `npm test` | Terminal result |
 | Offline golden-path demo | `npm run demo` | `outputs/2026-07-12/` |
+| Save a private founder reflection | `npm run founder -- demo learning reflect --text "What I learned"` | Private `manual-reflections.json` |
+| Save a reflection approved for digest/video drafts | `npm run founder -- demo learning reflect --topic "Hackathon" --text "What I learned" --public` | Private reflection store; included in later draft generation |
+| Save a confidential full-time work update | `npm run founder -- erick employment capture --text "What I completed"` | Private `manual-captures.json`; excluded from public outputs |
 | OpenAI learning extraction from sanitized sources | `npm run founder -- demo learning digest --fixture --ai` | Private `learning-log.json` |
 | OpenAI learning extraction and Notion export | `npm run founder -- demo learning digest --fixture --ai --notion` | Private learning log and a Notion page URL |
 | Complete OpenAI-assisted digest and video | `npm run founder -- demo default end-day --fixture --storage local --ai` | Digest, story plan, captions, and video in `outputs/2026-07-12/` |
@@ -109,6 +112,10 @@ open outputs/2026-07-12/founder-reel.mp4
 ```
 
 `--fixture` controls the input source: it uses sanitized demo newsletters instead of Gmail. `--ai` controls whether OpenAI performs learning extraction and story planning. The Remotion renderer remains deterministic after it receives the structured story plan.
+
+Manual reflections are private by default and survive later AI extraction runs. Add `--public` only when the reflection is safe to include in generated digest and video drafts. Optional reflection fields are `--topic`, `--why`, and `--next`.
+
+Manual activity captures are also private by default. The `employment`, `cadt`, `fulltime`, `full-time`, and `work` workspace names are always confidential and reject `--public`; those entries never enter the public manifest, Founder Digest, Founder Reel, or Notion learning export.
 
 ## Run with live providers
 
